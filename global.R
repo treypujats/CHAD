@@ -126,7 +126,11 @@ colnames(CovidConfirmedCases)[1]<-"CountyFIPS"
 temp <- tempfile()
 download.file("https://ihmecovid19storage.blob.core.windows.net/latest/ihme-covid19.zip", temp, mode="wb")
 zipdf <- unzip(temp, list = TRUE)
-csv_file <- zipdf$Name[2]
+for (k in 1:length(zipdf$Name)) {
+  if (grepl("Hospitalization", zipdf$Name[k], fixed = TRUE) & grepl("csv", zipdf$Name[k], fixed=TRUE)) {
+      csv_file <- zipdf$Name[k]
+  }
+}
 IHME_Model <- read.table(unz(temp, csv_file), header = T, sep = ",")
 unlink(temp)
 IHME_Model$date <- as.Date(IHME_Model$date, format = "%Y-%m-%d")
