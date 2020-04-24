@@ -174,7 +174,9 @@ CU00PSD<-subset(CU00PSD, select=-c(hosp_need_2.5,hosp_need_97.5,ICU_need_2.5,ICU
 Front<-'https://covid-19.bsvgateway.org/forecast/us/files/'
 Middle<-'/confirmed/'
 End<-'_confirmed_quantiles_us.csv'
-Date<-Sys.Date()-4    #Have to adjust the integer value based on the date of the most recent forecast file
+# Get most recent date from metadata json
+bsv_metadata<-jsonlite::fromJSON("https://covid-19.bsvgateway.org/forecast/forecast_metadata.json")
+Date<-bsv_metadata$us$most_recent_date
 ReadIn<-paste0(Front,Date,Middle,Date,End)
 LANL_Data<-read.csv(ReadIn)
 LANL_Data<-subset(LANL_Data, select=-c(simple_state,q.01,q.025,q.05,q.10,q.15,q.20,q.30,q.35,q.40,q.45,q.55,q.60,q.65,q.70,q.80,q.85,q.90,q.95,q.975,q.99,truth_confirmed,fcst_date))
