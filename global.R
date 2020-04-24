@@ -127,7 +127,7 @@ temp <- tempfile()
 download.file("https://ihmecovid19storage.blob.core.windows.net/latest/ihme-covid19.zip", temp, mode="wb")
 zipdf <- unzip(temp, list = TRUE)
 for (k in 1:length(zipdf$Name)) {
-  if (grepl("Hospitalization", zipdf$Name[k], fixed = TRUE) & grepl("csv", zipdf$Name[k], fixed=TRUE)) {
+  if (grepl(".csv", zipdf$Name[k], fixed=TRUE)) {
       csv_file <- zipdf$Name[k]
   }
 }
@@ -135,7 +135,14 @@ IHME_Model <- read.table(unz(temp, csv_file), header = T, sep = ",")
 unlink(temp)
 IHME_Model$date <- as.Date(IHME_Model$date, format = "%Y-%m-%d")
 StateList <- data.frame(state.name, state.abb)
-IHME_Model <- merge(IHME_Model, StateList, by.x = names(IHME_Model)[1], by.y = names(StateList)[1])
+# infer location name variable name from IHME_Model column names
+by.x.name = names(IHME_Model)[1]
+for (k in 1:length(names(IHME_Model))) {
+  if (grepl("loc", names(IHME_Model)[k], fixed=TRUE)) {
+    by.x.name = names(IHME_Model)[k]
+  }
+}
+IHME_Model <- merge(IHME_Model, StateList, by.x = by.x.name, by.y = names(StateList)[1])
 names(IHME_Model)[names(IHME_Model)=="state.abb"] <- "State"
 
 #From Columbia U, These files contain 42 day projections which they update on Sunday evenings.
