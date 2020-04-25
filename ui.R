@@ -48,8 +48,10 @@ ui <- tagList(
                   # Step Two - Sidebar
                   ###################################################################################################################################################
                   dashboardSidebar(width = 300,
-                                   sidebarMenu(
-                                       selectInput(
+                                   sidebarMenu(id="tabs",
+                                               tags$p(paste0("* Current as of ",format(Sys.Date(),format = "%d %B %Y")," at 0600 EST *")),
+                                               conditionalPanel(condition="input.tabselected>=3",
+                                                                selectInput(
                                            "Base",
                                            "Choose your base:", 
                                            list(`Installation` = sort(BaseList) ), 
@@ -58,10 +60,10 @@ ui <- tagList(
                                                    "Choose your local radius (miles):",
                                                    min = 10,
                                                    max = 100,
-                                                   value = 50),
-                                       br(),
-                                       
-                                       menuItem(
+                                                   value = 50)
+                                               ),
+
+                                       conditionalPanel(condition="input.tabselected==1",
                                            "MAJCOM Summary Inputs",
                                            tabName = "MAJCOMsummary",
                                            icon = icon("sliders-h"),
@@ -89,9 +91,8 @@ ui <- tagList(
                                                           "30 Days"="Thirty"))
                                            
                                        ),
-                                       br(),
-                                       menuItem(
-                                           "Current Local Health Inputs",
+                                       conditionalPanel(condition="input.tabselected==3",
+                                                        "Current Local Health Inputs",
                                            tabName = "localHealthInput",
                                            icon = icon("map-marker-alt"),
                                            div(id = "single", style="display: none;", numericInput("tckt", "Ticket Number : ", 12345,  width = 300)),
@@ -99,9 +100,8 @@ ui <- tagList(
                                                         c("County"="County",
                                                           "State"="State"))
                                        ),
-                                       br(),
-                                       menuItem(
-                                           "Local Health Projection Inputs",
+                                       conditionalPanel(condition="input.tabselected==4",
+                                                        "Local Health Projection Inputs",
                                            tabName = "localHealthProj",
                                            icon = icon("sliders-h"),
                                            div(id = "single", style="display: none;", numericInput("tckt", "Ticket Number : ", 12345,  width = 300)),
@@ -169,19 +169,7 @@ ui <- tagList(
                                        # fluidRow(
                                        #     valueBox("HIGH RISK", subtitle ="Local Health Risk **notional ex.**",color= "red",width = 12)
                                        # )
-                                   ),
-                                   tags$footer(
-                                       tags$p(paste0("* Current as of ",format(Sys.Date(),format = "%d %B %Y")," at 0600 EST *")),
-                                       style = "
-                                       position: fixed;
-                                       bottom: 0;
-                                       width: 90%;
-                                       color: #8aacc8;
-                                       padding: 20px;
-                                       font-size: 15px;
-                                       "
                                    )
-                                   
                   ),
                   
                   
@@ -204,11 +192,12 @@ ui <- tagList(
                                    $("header").find("nav").append(\'<span class="myClass"> COVID-19 Health Assessment Dashboard Beta v0.6</span>\');
                                    })
                                    ')),
-                      tabsetPanel(id = "tabs",
+                      tabsetPanel(id = "tabselected",
                                   
                                   ####### BEGIN SUMMARY TAB #########
                                   # Mission Risk ------------------------------------------------------------
                                   tabPanel(
+                                      value = 1,
                                       title = "MAJCOM Summary",
                                       fluidRow(
                                           box(plotlyOutput("SummaryTabChoro", height = 600, width = 'auto')),
@@ -229,8 +218,8 @@ ui <- tagList(
                                   
                                   # Summary Tab -------------------------------------------------------------
                                   tabPanel(
+                                      value = 2,
                                       title = "National Summary",
-
                                       box(title = "National Impact Map",solidHeader = T, align = "center", htmlOutput("SummaryPlot"),height=700,width=1200),
                                       box(title = "National Statistics", solidHeader=T, align = "left", column(width = 12, DT::dataTableOutput("NationalDataTable1"), style = "height:240px;overflow-y: scroll;overflow-x:scroll"),width = 13)
                                       
@@ -240,6 +229,7 @@ ui <- tagList(
                                   
                                   # Current Local Health ----------------------------------------------------
                                   tabPanel(
+                                      value = 3,
                                       title = "Current Local Health",
                                       fluidRow(
                                           # A static valueBox
@@ -270,6 +260,7 @@ ui <- tagList(
                                   ####### BEGIN LOCAL PROJECTION TAB #########
                                   # Local Health Projections ------------------------------------------------
                                   tabPanel(
+                                      value = 4,
                                       title = "Local Health Projections",
                                       fluidRow(
                                           valueBoxOutput("TotalPopulation"),
