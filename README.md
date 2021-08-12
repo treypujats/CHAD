@@ -7,7 +7,9 @@ This repository has moved to https://github.com/CHAD-Analytics/CHAD
 <br/><br/><br/><br/><br/><br/>
 
 ## CHAD
-The app is hosted on shiny web servers and can be used by following the link here: https://covid19dash.shinyapps.io/covid19/.
+The app is hosted on shiny web servers and can be used by following the link here: https://afit.shinyapps.io/covid19/. 
+
+
 
 ### Getting Started
 The most up to date app is located in the covid19 folder. This folder contains a global.R, server.R, and ui.R file. 
